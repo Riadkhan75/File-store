@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import defaultConfig from '../../firebase-applet-config.json';
 
-// Allow admin to view or override config for external deployments
+// Allow admin to view or override config for external deployments (like Vercel)
 export const getActiveFirebaseConfig = () => {
   try {
     const customConfig = localStorage.getItem('custom_firebase_config');
@@ -13,7 +13,19 @@ export const getActiveFirebaseConfig = () => {
   } catch (e) {
     console.error('Failed to parse custom Firebase config', e);
   }
-  return defaultConfig;
+
+  // Merge defaultConfig with any environment variables provided by Vercel or Vite
+  const env = (import.meta as any).env || {};
+  return {
+    ...defaultConfig,
+    ...(env.VITE_FIREBASE_API_KEY && { apiKey: env.VITE_FIREBASE_API_KEY }),
+    ...(env.VITE_FIREBASE_AUTH_DOMAIN && { authDomain: env.VITE_FIREBASE_AUTH_DOMAIN }),
+    ...(env.VITE_FIREBASE_PROJECT_ID && { projectId: env.VITE_FIREBASE_PROJECT_ID }),
+    ...(env.VITE_FIREBASE_STORAGE_BUCKET && { storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET }),
+    ...(env.VITE_FIREBASE_MESSAGING_SENDER_ID && { messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID }),
+    ...(env.VITE_FIREBASE_APP_ID && { appId: env.VITE_FIREBASE_APP_ID }),
+    ...(env.VITE_FIREBASE_DATABASE_ID && { firestoreDatabaseId: env.VITE_FIREBASE_DATABASE_ID }),
+  };
 };
 
 const activeConfig = getActiveFirebaseConfig();

@@ -170,6 +170,41 @@ export const AdminBackup: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Vercel Live Deployment Card */}
+      <div className="p-6 rounded-2xl bg-neutral-900/80 border border-amber-400/30 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i className="fa-solid fa-cloud-arrow-up text-amber-400"></i>
+            <span>Vercel Live Deployment (ভ্যার্সেল ডিপ্লয়)</span>
+          </h3>
+          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
+            vercel.json Ready ✓
+          </span>
+        </div>
+
+        <p className="text-xs text-neutral-400 leading-relaxed">
+          এই প্রজেক্টে <code className="text-amber-400 font-mono">vercel.json</code> ফাইল অলরেডি যুক্ত করা হয়েছে। আপনি কোড GitHub-এ পুশ করে Vercel-এ ইমপোর্ট করলেই ১ ক্লিকে ফ্রি লাইভ ওয়েবসাইট তৈরি হবে।
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase font-bold text-amber-400 tracking-wider">ধাপ ১: GitHub</span>
+            <p className="text-xs text-white font-medium mt-1">কোড গিটহাবে আপলোড করুন</p>
+            <p className="text-[11px] text-neutral-500 mt-0.5">নতুন GitHub Repository বানিয়ে Push করুন</p>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase font-bold text-amber-400 tracking-wider">ধাপ ২: vercel.com</span>
+            <p className="text-xs text-white font-medium mt-1">Vercel-এ Import করুন</p>
+            <p className="text-[11px] text-neutral-500 mt-0.5">Add New Project দিয়ে রিপো সিলেক্ট করুন</p>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">ধাপ ৩: Deploy</span>
+            <p className="text-xs text-white font-medium mt-1">"Deploy" বাটনে ক্লিক করুন</p>
+            <p className="text-[11px] text-neutral-500 mt-0.5">Vite ও Firebase অটোমেটিক কনফিগার হয়ে লাইভ হবে</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

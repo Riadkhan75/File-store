@@ -166,7 +166,7 @@ export const AdminStats: React.FC = () => {
                     <td className="p-3 pl-4">
                       <div className="flex items-center gap-2.5">
                         <i className={`${file.icon || 'fa-solid fa-download'} text-amber-400 text-xs`}></i>
-                        <span className="font-bold text-white truncate max-w-[200px]">{file.name}</span>
+                        <span className="font-bold text-white break-words max-w-sm" title={file.name}>{file.name}</span>
                       </div>
                     </td>
                     <td className="p-3 text-neutral-300">

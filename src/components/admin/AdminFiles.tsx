@@ -317,16 +317,16 @@ export const AdminFiles: React.FC = () => {
                         <div className="w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center text-sm shrink-0">
                           <i className={file.icon || 'fa-solid fa-download'}></i>
                         </div>
-                        <div className="min-w-0 max-w-[220px] sm:max-w-xs">
-                          <div className="font-bold text-white truncate flex items-center gap-1.5">
-                            <span>{file.name}</span>
+                        <div className="min-w-0 max-w-[260px] sm:max-w-md">
+                          <div className="font-bold text-white break-words flex items-center gap-1.5 flex-wrap">
+                            <span title={file.name}>{file.name}</span>
                             {file.version && (
-                              <span className="text-[10px] text-amber-400 font-mono">
+                              <span className="text-[10px] text-amber-400 font-mono shrink-0">
                                 ({file.version})
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-neutral-500 truncate font-mono">
+                          <div className="text-[11px] text-neutral-500 truncate font-mono" title={file.url}>
                             {file.url}
                           </div>
                         </div>

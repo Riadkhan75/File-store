@@ -207,8 +207,8 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigateTab }) =
                     </span>
                     <i className={`${file.icon || 'fa-solid fa-download'} text-amber-400 text-sm shrink-0`}></i>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{file.name}</p>
-                      <p className="text-[10px] text-neutral-500 truncate">{file.categoryName || 'General'}</p>
+                      <p className="text-xs font-bold text-white break-words leading-tight" title={file.name}>{file.name}</p>
+                      <p className="text-[10px] text-neutral-500">{file.categoryName || 'General'}</p>
                     </div>
                   </div>
 

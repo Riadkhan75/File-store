@@ -1,0 +1,6 @@
+{
+  "name": "File Store",
+  "description": "A modern downloadable-link and file store website with a secure admin management dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

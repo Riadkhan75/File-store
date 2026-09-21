@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email in ["banglag215@gmail.com", "nazrulpost75@gmail.com"] ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Admins collection
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if isAdmin() || (isSignedIn() && request.auth.token.email in ["banglag215@gmail.com", "nazrulpost75@gmail.com"]);
+    }
+
+    // Website and theme settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin() || !exists(/databases/$(database)/documents/settings/$(settingId));
+    }
+
+    // Files collection
+    match /files/{fileId} {
+      allow read: if true;
+      allow create: if isAdmin() || !exists(/databases/$(database)/documents/files/$(fileId));
+      allow delete: if isAdmin();
+      // Allow admin full update, or allow public to increment clicks or views
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clicks', 'views'])
+      );
+    }
+
+    // Categories collection
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin() || !exists(/databases/$(database)/documents/categories/$(categoryId));
+    }
+
+    // Social links collection
+    match /socialLinks/{socialLinkId} {
+      allow read: if true;
+      allow write: if isAdmin() || !exists(/databases/$(database)/documents/socialLinks/$(socialLinkId));
+    }
+
+    // User profiles & stats
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.auth.uid == userId || isAdmin();
+      allow update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow delete: if isAdmin();
+    }
+
+    // Admin activity audit logs
+    match /adminLogs/{logId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Broken link reports
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

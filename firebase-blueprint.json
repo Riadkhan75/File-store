@@ -1,0 +1,194 @@
+{
+  "entities": {
+    "WebsiteSettings": {
+      "title": "WebsiteSettings",
+      "description": "Global store configuration and theme settings",
+      "type": "object",
+      "properties": {
+        "storeName": { "type": "string", "maxLength": 100 },
+        "logoUrl": { "type": "string", "maxLength": 80000 },
+        "description": { "type": "string", "maxLength": 500 },
+        "username": { "type": "string", "maxLength": 100 },
+        "socialLink": { "type": "string", "maxLength": 1000 },
+        "telegramLink": { "type": "string", "maxLength": 1000 },
+        "footerText": { "type": "string", "maxLength": 300 },
+        "browserTitle": { "type": "string", "maxLength": 100 },
+        "faviconUrl": { "type": "string", "maxLength": 2000 },
+        "primaryColor": { "type": "string", "maxLength": 30 },
+        "backgroundColor": { "type": "string", "maxLength": 30 },
+        "textColor": { "type": "string", "maxLength": 30 },
+        "borderColor": { "type": "string", "maxLength": 30 },
+        "buttonRadius": { "type": "string", "maxLength": 20 },
+        "glowIntensity": { "type": "string", "maxLength": 20 },
+        "fontFamily": { "type": "string", "maxLength": 50 },
+        "cardStyle": { "type": "string", "maxLength": 50 },
+        "websiteStatus": { "type": "string", "enum": ["live", "maintenance"] },
+        "maintenanceMessage": { "type": "string", "maxLength": 500 },
+        "bannerEnabled": { "type": "boolean" },
+        "bannerTitle": { "type": "string", "maxLength": 200 },
+        "bannerSubtitle": { "type": "string", "maxLength": 500 },
+        "bannerImageUrl": { "type": "string", "maxLength": 120000 },
+        "bannerButtonText": { "type": "string", "maxLength": 100 },
+        "bannerButtonLink": { "type": "string", "maxLength": 1000 },
+        "announcementEnabled": { "type": "boolean" },
+        "announcementText": { "type": "string", "maxLength": 500 },
+        "announcementLink": { "type": "string", "maxLength": 1000 },
+        "announcementType": { "type": "string", "maxLength": 30 },
+        "adHeaderEnabled": { "type": "boolean" },
+        "adHeaderCode": { "type": "string", "maxLength": 2000 },
+        "adInfeedEnabled": { "type": "boolean" },
+        "adInfeedCode": { "type": "string", "maxLength": 2000 },
+        "adFooterEnabled": { "type": "boolean" },
+        "adFooterCode": { "type": "string", "maxLength": 2000 },
+        "vipInstructions": { "type": "string", "maxLength": 1000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "FileItem": {
+      "title": "FileItem",
+      "description": "Downloadable file or link item in the store",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "url": { "type": "string", "maxLength": 2000 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "categoryId": { "type": "string", "maxLength": 128 },
+        "categoryName": { "type": "string", "maxLength": 100 },
+        "icon": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["active", "disabled"] },
+        "displayOrder": { "type": "number" },
+        "clicks": { "type": "number" },
+        "views": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "isPremium": { "type": "boolean" },
+        "fileSize": { "type": "string", "maxLength": 50 },
+        "version": { "type": "string", "maxLength": 50 },
+        "mirrors": {
+          "type": "array",
+          "description": "Alternative download links"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "url", "status"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "End-user accounts and permissions",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 200 },
+        "displayName": { "type": "string", "maxLength": 150 },
+        "photoURL": { "type": "string", "maxLength": 2000 },
+        "role": { "type": "string", "enum": ["user", "vip", "admin"] },
+        "status": { "type": "string", "enum": ["active", "blocked"] },
+        "blockedReason": { "type": "string", "maxLength": 500 },
+        "bookmarks": { "type": "array" },
+        "downloadCount": { "type": "number" },
+        "lastLoginAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AdminLog": {
+      "title": "AdminLog",
+      "description": "Audit trail for administrator activity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "adminEmail": { "type": "string", "maxLength": 200 },
+        "action": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 50 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "BrokenLinkReport": {
+      "title": "BrokenLinkReport",
+      "description": "User submitted broken link notifications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "fileId": { "type": "string", "maxLength": 128 },
+        "fileName": { "type": "string", "maxLength": 200 },
+        "userEmail": { "type": "string", "maxLength": 200 },
+        "reason": { "type": "string", "maxLength": 200 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "resolved", "dismissed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "CategoryItem": {
+      "title": "CategoryItem",
+      "description": "Filterable category for files",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "displayOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name"]
+    },
+    "SocialLinkItem": {
+      "title": "SocialLinkItem",
+      "description": "Social media links configured for footer and header",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "platform": { "type": "string", "maxLength": 50 },
+        "url": { "type": "string", "maxLength": 2000 },
+        "icon": { "type": "string", "maxLength": 100 },
+        "enabled": { "type": "boolean" },
+        "displayOrder": { "type": "number" }
+      },
+      "required": ["platform", "url"]
+    },
+    "AdminProfile": {
+      "title": "AdminProfile",
+      "description": "Authorized administrator account",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "maxLength": 200 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/settings/website": {
+      "schema": "WebsiteSettings",
+      "description": "Main website configuration document"
+    },
+    "/files/{fileId}": {
+      "schema": "FileItem",
+      "description": "Collection of downloadable files and links"
+    },
+    "/categories/{categoryId}": {
+      "schema": "CategoryItem",
+      "description": "Collection of file categories"
+    },
+    "/socialLinks/{socialLinkId}": {
+      "schema": "SocialLinkItem",
+      "description": "Collection of social media links"
+    },
+    "/admins/{adminId}": {
+      "schema": "AdminProfile",
+      "description": "Collection of authorized admin users"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Collection of registered user profiles, bookmarks, and download stats"
+    },
+    "/adminLogs/{logId}": {
+      "schema": "AdminLog",
+      "description": "Collection of admin activity audit logs"
+    },
+    "/reports/{reportId}": {
+      "schema": "BrokenLinkReport",
+      "description": "Collection of user-reported broken links"
+    }
+  }
+}

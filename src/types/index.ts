@@ -37,6 +37,8 @@ export interface WebsiteSettings {
   announcementLink?: string;
   announcementType?: 'info' | 'warning' | 'alert' | 'success';
   // Monetization & Ads
+  monetizationEnabled?: boolean;
+  vipGatingEnabled?: boolean;
   adHeaderEnabled?: boolean;
   adHeaderCode?: string;
   adInfeedEnabled?: boolean;

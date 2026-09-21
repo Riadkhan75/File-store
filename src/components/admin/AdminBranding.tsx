@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { compressImageFile, compressBase64Image } from '../../utils/imageCompressor';
 
@@ -27,6 +27,13 @@ export const AdminBranding: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [optimizedInfo, setOptimizedInfo] = useState<string | null>(null);
+
+  // Sync state with settings
+  useEffect(() => {
+    if (settings && settings.logoUrl !== undefined) {
+      setLogoUrl(settings.logoUrl || '');
+    }
+  }, [settings.logoUrl]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

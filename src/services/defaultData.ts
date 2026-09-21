@@ -33,6 +33,8 @@ export const DEFAULT_SETTINGS: WebsiteSettings = {
   announcementLink: 'https://t.me',
   announcementType: 'info',
   // Monetization & Ads
+  monetizationEnabled: false,
+  vipGatingEnabled: true,
   adHeaderEnabled: false,
   adHeaderCode: '',
   adInfeedEnabled: false,

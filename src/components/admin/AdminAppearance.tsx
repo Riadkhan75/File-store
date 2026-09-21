@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { WebsiteSettings } from '../../types';
 
@@ -21,6 +21,27 @@ export const AdminAppearance: React.FC = () => {
     settings.cardStyle || 'bordered'
   );
   const [saving, setSaving] = useState(false);
+
+  // Sync with Firestore settings
+  useEffect(() => {
+    if (settings) {
+      if (settings.primaryColor) setPrimaryColor(settings.primaryColor);
+      if (settings.backgroundColor) setBackgroundColor(settings.backgroundColor);
+      if (settings.borderColor) setBorderColor(settings.borderColor);
+      if (settings.buttonRadius) setButtonRadius(settings.buttonRadius);
+      if (settings.glowIntensity) setGlowIntensity(settings.glowIntensity);
+      if (settings.fontFamily) setFontFamily(settings.fontFamily);
+      if (settings.cardStyle) setCardStyle(settings.cardStyle);
+    }
+  }, [
+    settings.primaryColor,
+    settings.backgroundColor,
+    settings.borderColor,
+    settings.buttonRadius,
+    settings.glowIntensity,
+    settings.fontFamily,
+    settings.cardStyle,
+  ]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

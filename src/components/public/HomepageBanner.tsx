@@ -6,9 +6,12 @@ interface HomepageBannerProps {
 }
 
 export const HomepageBanner: React.FC<HomepageBannerProps> = ({ settings }) => {
-  if (!settings.bannerEnabled || (!settings.bannerTitle && !settings.bannerImageUrl)) {
+  if (!settings.bannerEnabled) {
     return null;
   }
+
+  const title = settings.bannerTitle || 'Welcome to our Official File Store';
+  const subtitle = settings.bannerSubtitle || 'Direct high-speed downloads & premium modding resources.';
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-neutral-900 to-amber-500/10 p-5 sm:p-6 mb-5 shadow-xl shadow-amber-500/5 group">
@@ -28,11 +31,11 @@ export const HomepageBanner: React.FC<HomepageBannerProps> = ({ settings }) => {
             Featured Spotlight
           </div>
           <h3 className="text-base sm:text-lg font-black text-white tracking-wide leading-snug drop-shadow-sm">
-            {settings.bannerTitle}
+            {title}
           </h3>
-          {settings.bannerSubtitle && (
+          {subtitle && (
             <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-normal">
-              {settings.bannerSubtitle}
+              {subtitle}
             </p>
           )}
         </div>

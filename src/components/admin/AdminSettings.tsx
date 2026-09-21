@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 
 export const AdminSettings: React.FC = () => {
-  const { settings, updateSettings, addAdminLog } = useStore();
+  const { settings, updateSettings, addAdminLog, showToast } = useStore();
 
   const [storeName, setStoreName] = useState(settings.storeName || '');
   const [description, setDescription] = useState(settings.description || '');
@@ -21,6 +21,51 @@ export const AdminSettings: React.FC = () => {
   );
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Sync state whenever settings change or load from Firestore
+  useEffect(() => {
+    if (settings) {
+      setStoreName(settings.storeName || '');
+      setDescription(settings.description || '');
+      setUsername(settings.username || '');
+      setTelegramLink(settings.telegramLink || '');
+      setSocialLink(settings.socialLink || '');
+      setFooterText(settings.footerText || '');
+      setBrowserTitle(settings.browserTitle || '');
+      setFaviconUrl(settings.faviconUrl || '');
+      setWebsiteStatus(settings.websiteStatus || 'live');
+      if (settings.maintenanceMessage) {
+        setMaintenanceMessage(settings.maintenanceMessage);
+      }
+    }
+  }, [
+    settings.storeName,
+    settings.description,
+    settings.username,
+    settings.telegramLink,
+    settings.socialLink,
+    settings.footerText,
+    settings.browserTitle,
+    settings.faviconUrl,
+    settings.websiteStatus,
+    settings.maintenanceMessage,
+  ]);
+
+  // Instant switch for Store Status
+  const handleSetWebsiteStatus = async (status: 'live' | 'maintenance') => {
+    setWebsiteStatus(status);
+    try {
+      await updateSettings({ websiteStatus: status });
+      await addAdminLog({
+        action: `Changed Store Status to ${status.toUpperCase()}`,
+        category: 'settings',
+      });
+      showToast(`Store is now ${status === 'live' ? 'LIVE (ONLINE)' : 'IN MAINTENANCE MODE'}`, 'info');
+    } catch (e) {
+      console.error(e);
+      setWebsiteStatus(status === 'live' ? 'maintenance' : 'live');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,22 +179,22 @@ export const AdminSettings: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setWebsiteStatus('live')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                onClick={() => handleSetWebsiteStatus('live')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                   websiteStatus === 'live'
                     ? 'bg-emerald-500 text-black shadow'
-                    : 'bg-neutral-900 text-neutral-400 border border-neutral-800'
+                    : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-white'
                 }`}
               >
                 Live Online
               </button>
               <button
                 type="button"
-                onClick={() => setWebsiteStatus('maintenance')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                onClick={() => handleSetWebsiteStatus('maintenance')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                   websiteStatus === 'maintenance'
                     ? 'bg-amber-400 text-black shadow'
-                    : 'bg-neutral-900 text-neutral-400 border border-neutral-800'
+                    : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-white'
                 }`}
               >
                 Maintenance

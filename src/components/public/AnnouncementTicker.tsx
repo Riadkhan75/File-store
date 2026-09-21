@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WebsiteSettings } from '../../types';
 
 interface AnnouncementTickerProps {
@@ -8,10 +8,15 @@ interface AnnouncementTickerProps {
 export const AnnouncementTicker: React.FC<AnnouncementTickerProps> = ({ settings }) => {
   const [dismissed, setDismissed] = useState(false);
 
-  if (!settings.announcementEnabled || !settings.announcementText || dismissed) {
+  useEffect(() => {
+    setDismissed(false);
+  }, [settings.announcementEnabled, settings.announcementText]);
+
+  if (!settings.announcementEnabled || dismissed) {
     return null;
   }
 
+  const text = settings.announcementText || 'Welcome! Join our Telegram community for official downloads & updates.';
   const type = settings.announcementType || 'info';
   const colorMap = {
     info: 'bg-amber-400/10 border-amber-400/40 text-amber-300',
@@ -42,17 +47,17 @@ export const AnnouncementTicker: React.FC<AnnouncementTickerProps> = ({ settings
             rel="noopener noreferrer"
             className="hover:underline truncate font-medium flex items-center gap-1.5"
           >
-            <span>{settings.announcementText}</span>
+            <span>{text}</span>
             <i className="fa-solid fa-arrow-right text-[10px] shrink-0 opacity-80"></i>
           </a>
         ) : (
-          <span className="truncate font-medium">{settings.announcementText}</span>
+          <span className="truncate font-medium">{text}</span>
         )}
       </div>
 
       <button
         onClick={() => setDismissed(true)}
-        className="opacity-70 hover:opacity-100 transition p-1 shrink-0"
+        className="opacity-70 hover:opacity-100 transition p-1 shrink-0 cursor-pointer"
         title="Dismiss"
       >
         <i className="fa-solid fa-xmark text-xs"></i>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 
 export const AdminBanner: React.FC = () => {
-  const { settings, updateSettings, addAdminLog } = useStore();
+  const { settings, updateSettings, addAdminLog, showToast } = useStore();
 
   const [bannerEnabled, setBannerEnabled] = useState(settings.bannerEnabled ?? false);
   const [bannerTitle, setBannerTitle] = useState(settings.bannerTitle || '');
@@ -20,6 +20,65 @@ export const AdminBanner: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Sync state whenever settings change or load from Firestore
+  useEffect(() => {
+    if (settings) {
+      setBannerEnabled(settings.bannerEnabled ?? false);
+      setBannerTitle(settings.bannerTitle || '');
+      setBannerSubtitle(settings.bannerSubtitle || '');
+      setBannerImageUrl(settings.bannerImageUrl || '');
+      setBannerButtonText(settings.bannerButtonText || 'Explore Now');
+      setBannerButtonLink(settings.bannerButtonLink || '');
+      setAnnouncementEnabled(settings.announcementEnabled ?? false);
+      setAnnouncementText(settings.announcementText || '');
+      setAnnouncementLink(settings.announcementLink || '');
+      setAnnouncementType(settings.announcementType || 'info');
+    }
+  }, [
+    settings.bannerEnabled,
+    settings.bannerTitle,
+    settings.bannerSubtitle,
+    settings.bannerImageUrl,
+    settings.bannerButtonText,
+    settings.bannerButtonLink,
+    settings.announcementEnabled,
+    settings.announcementText,
+    settings.announcementLink,
+    settings.announcementType,
+  ]);
+
+  // Instant toggle for Live Broadcast Ticker
+  const handleToggleAnnouncement = async (nextVal: boolean) => {
+    setAnnouncementEnabled(nextVal);
+    try {
+      await updateSettings({ announcementEnabled: nextVal });
+      await addAdminLog({
+        action: `Turned Announcement Ticker ${nextVal ? 'ON' : 'OFF'}`,
+        category: 'settings',
+      });
+      showToast(`Announcement Ticker ${nextVal ? 'ENABLED (ON)' : 'DISABLED (OFF)'}`, 'info');
+    } catch (e) {
+      console.error(e);
+      setAnnouncementEnabled(!nextVal);
+    }
+  };
+
+  // Instant toggle for Homepage Spotlight Banner
+  const handleToggleBanner = async (nextVal: boolean) => {
+    setBannerEnabled(nextVal);
+    try {
+      await updateSettings({ bannerEnabled: nextVal });
+      await addAdminLog({
+        action: `Turned Spotlight Banner ${nextVal ? 'ON' : 'OFF'}`,
+        category: 'settings',
+      });
+      showToast(`Spotlight Banner ${nextVal ? 'ENABLED (ON)' : 'DISABLED (OFF)'}`, 'info');
+    } catch (e) {
+      console.error(e);
+      setBannerEnabled(!nextVal);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,15 +139,26 @@ export const AdminBanner: React.FC = () => {
               </div>
             </div>
 
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={announcementEnabled}
-                onChange={(e) => setAnnouncementEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-400"></div>
-            </label>
+            <div className="flex items-center gap-3">
+              <span
+                className={`text-[11px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
+                  announcementEnabled
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                }`}
+              >
+                {announcementEnabled ? 'Ticker ON' : 'Ticker OFF'}
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={announcementEnabled}
+                  onChange={(e) => handleToggleAnnouncement(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-400"></div>
+              </label>
+            </div>
           </div>
 
           {announcementEnabled && (
@@ -152,15 +222,26 @@ export const AdminBanner: React.FC = () => {
               </div>
             </div>
 
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={bannerEnabled}
-                onChange={(e) => setBannerEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-400"></div>
-            </label>
+            <div className="flex items-center gap-3">
+              <span
+                className={`text-[11px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
+                  bannerEnabled
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-neutral-800 text-neutral-400 border-neutral-700'
+                }`}
+              >
+                {bannerEnabled ? 'Banner ON' : 'Banner OFF'}
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={bannerEnabled}
+                  onChange={(e) => handleToggleBanner(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-400"></div>
+              </label>
+            </div>
           </div>
 
           {bannerEnabled && (

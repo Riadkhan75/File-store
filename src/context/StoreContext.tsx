@@ -458,7 +458,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Update File
+  // Update File with instant optimistic UI update
   const updateFile = async (id: string, fileData: Partial<FileItem>) => {
     const existing = files.find((f) => f.id === id);
     const updated = {
@@ -466,20 +466,31 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ...fileData,
       updatedAt: new Date().toISOString(),
     };
+    // Optimistically update memory state immediately
+    setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, ...updated } : f)));
     try {
       await setDoc(doc(db, 'files', id), updated, { merge: true });
       showToast('File updated successfully!');
     } catch (error) {
+      // Revert if write failed
+      if (existing) {
+        setFiles((prev) => prev.map((f) => (f.id === id ? existing : f)));
+      }
       handleFirestoreError(error, OperationType.UPDATE, `files/${id}`);
     }
   };
 
-  // Delete File
+  // Delete File with instant optimistic UI update
   const deleteFile = async (id: string) => {
+    const backup = files.find((f) => f.id === id);
+    setFiles((prev) => prev.filter((f) => f.id !== id));
     try {
       await deleteDoc(doc(db, 'files', id));
       showToast('File removed successfully!');
     } catch (error) {
+      if (backup) {
+        setFiles((prev) => [...prev, backup]);
+      }
       handleFirestoreError(error, OperationType.DELETE, `files/${id}`);
     }
   };
@@ -570,8 +581,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Social Links
+  // Social Links with optimistic state update
   const updateSocialLink = async (link: SocialLinkItem) => {
+    setSocialLinks((prev) => prev.map((s) => (s.id === link.id ? { ...s, ...link } : s)));
     try {
       await setDoc(doc(db, 'socialLinks', link.id), link, { merge: true });
       showToast(`${link.platform} link updated!`);
@@ -581,6 +593,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const saveAllSocialLinks = async (links: SocialLinkItem[]) => {
+    setSocialLinks(links);
     try {
       const batch = writeBatch(db);
       links.forEach((l) => {

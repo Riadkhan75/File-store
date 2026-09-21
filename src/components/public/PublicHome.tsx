@@ -11,6 +11,7 @@ import { HomepageBanner } from './HomepageBanner';
 import { FileDetailsModal } from './FileDetailsModal';
 import { ReportBrokenLinkModal } from './ReportBrokenLinkModal';
 import { UserProfileModal } from './UserProfileModal';
+import { AdBannerSlot } from './AdBannerSlot';
 import { FileItem } from '../../types';
 import { DICTIONARY, Language } from '../../services/i18n';
 
@@ -24,8 +25,9 @@ export const PublicHome: React.FC = () => {
     trackFileClick,
     trackFileView,
     recordBatchViews,
+    showToast,
   } = useStore();
-  const { bookmarks, isAdmin } = useAuth();
+  const { bookmarks, isAdmin, isVip } = useAuth();
 
   const [language, setLanguage] = useState<Language>('en');
   const t = DICTIONARY[language];
@@ -107,6 +109,14 @@ export const PublicHome: React.FC = () => {
   };
 
   const handleDownload = (file: FileItem) => {
+    // If file is VIP-locked and VIP gating is active, enforce VIP membership
+    const isVipGated = (settings.vipGatingEnabled !== false) && file.isPremium && !isVip && !isAdmin;
+    if (isVipGated) {
+      trackFileView(file.id);
+      setSelectedFileForDetails(file);
+      showToast('This file requires VIP membership. Please view unlock instructions.', 'info');
+      return;
+    }
     trackFileClick(file);
   };
 
@@ -172,11 +182,12 @@ export const PublicHome: React.FC = () => {
       </div>
 
       <main className="relative z-10 flex-1 w-full max-w-xl mx-auto px-4 pb-12">
-        {/* Header Ad Placement if configured */}
-        {settings.adHeaderCode && (
-          <div
-            className="my-3 text-center overflow-hidden rounded-xl"
-            dangerouslySetInnerHTML={{ __html: settings.adHeaderCode }}
+        {/* Header Ad Placement */}
+        {settings.monetizationEnabled !== false && settings.adHeaderEnabled && (
+          <AdBannerSlot
+            slotType="header"
+            enabled={true}
+            code={settings.adHeaderCode}
           />
         )}
 
@@ -274,11 +285,12 @@ export const PublicHome: React.FC = () => {
                   onDownloadClick={handleDownload}
                   onOpenDetails={handleOpenFileDetails}
                 />
-                {/* In-feed Ad Banner after every 4 items if configured */}
-                {settings.adInfeedCode && (index + 1) % 4 === 0 && (
-                  <div
-                    className="w-[95%] sm:w-[96%] p-2 rounded-xl bg-neutral-950 border border-neutral-800 text-center overflow-hidden"
-                    dangerouslySetInnerHTML={{ __html: settings.adInfeedCode }}
+                {/* In-feed Ad Banner after every 4 items if enabled */}
+                {settings.monetizationEnabled !== false && settings.adInfeedEnabled && (index + 1) % 4 === 0 && (
+                  <AdBannerSlot
+                    slotType="infeed"
+                    enabled={true}
+                    code={settings.adInfeedCode}
                   />
                 )}
               </React.Fragment>
@@ -295,11 +307,12 @@ export const PublicHome: React.FC = () => {
           />
         )}
 
-        {/* Footer Ad Placement if configured */}
-        {settings.adFooterCode && (
-          <div
-            className="my-5 text-center overflow-hidden rounded-xl"
-            dangerouslySetInnerHTML={{ __html: settings.adFooterCode }}
+        {/* Footer Ad Placement */}
+        {settings.monetizationEnabled !== false && settings.adFooterEnabled && (
+          <AdBannerSlot
+            slotType="footer"
+            enabled={true}
+            code={settings.adFooterCode}
           />
         )}
 

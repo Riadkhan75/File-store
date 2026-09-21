@@ -20,7 +20,7 @@ const POPULAR_ICONS = [
 ];
 
 export const AdminFiles: React.FC = () => {
-  const { files, categories, addFile, updateFile, deleteFile, addAdminLog } = useStore();
+  const { files, categories, addFile, updateFile, deleteFile, addAdminLog, showToast } = useStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFile, setEditingFile] = useState<FileItem | null>(null);
@@ -194,6 +194,7 @@ export const AdminFiles: React.FC = () => {
   const handleToggleStatus = async (file: FileItem) => {
     const nextStatus = file.status === 'active' ? 'disabled' : 'active';
     await updateFile(file.id, { status: nextStatus });
+    showToast(`File "${file.name}" is now ${nextStatus === 'active' ? 'ACTIVE (Visible)' : 'DISABLED (Hidden)'}`, 'info');
     await addAdminLog({
       action: `Toggled File Status: ${file.name} to ${nextStatus}`,
       category: 'file',
@@ -201,17 +202,21 @@ export const AdminFiles: React.FC = () => {
   };
 
   const handleQuickToggleFeatured = async (file: FileItem) => {
-    await updateFile(file.id, { isFeatured: !file.isFeatured });
+    const nextVal = !file.isFeatured;
+    await updateFile(file.id, { isFeatured: nextVal });
+    showToast(`"${file.name}" ${nextVal ? 'marked as Featured Spotlight' : 'removed from Featured'}`, 'info');
     await addAdminLog({
-      action: `Toggled Featured on: ${file.name}`,
+      action: `Toggled Featured on: ${file.name} to ${nextVal}`,
       category: 'file',
     });
   };
 
   const handleQuickTogglePremium = async (file: FileItem) => {
-    await updateFile(file.id, { isPremium: !file.isPremium });
+    const nextVal = !file.isPremium;
+    await updateFile(file.id, { isPremium: nextVal });
+    showToast(`VIP lock on "${file.name}" is now ${nextVal ? 'ENABLED (VIP Only)' : 'REMOVED (Free for all)'}`, 'info');
     await addAdminLog({
-      action: `Toggled VIP Status on: ${file.name}`,
+      action: `Toggled VIP Status on: ${file.name} to ${nextVal}`,
       category: 'file',
     });
   };
@@ -580,33 +585,64 @@ export const AdminFiles: React.FC = () => {
                 </div>
               </div>
 
-              {/* Toggles: Featured & VIP / Premium */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-neutral-950 border border-neutral-850">
-                <label className="flex items-center justify-between cursor-pointer">
+              {/* Toggles: Status, Featured & VIP / Premium */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-neutral-950 border border-neutral-850">
+                {/* Status Toggle */}
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-900 border border-neutral-800">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${formStatus === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`}></span>
+                    <span className="text-xs font-bold text-white">Status</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormStatus(formStatus === 'active' ? 'disabled' : 'active')}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition cursor-pointer ${
+                      formStatus === 'active'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : 'bg-neutral-800 text-neutral-400 border border-neutral-700'
+                    }`}
+                  >
+                    {formStatus === 'active' ? 'Active' : 'Disabled'}
+                  </button>
+                </div>
+
+                {/* Featured Toggle */}
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-900 border border-neutral-800">
                   <div className="flex items-center gap-2">
                     <i className="fa-solid fa-star text-amber-400 text-xs"></i>
-                    <span className="text-xs font-bold text-white">Feature on Home</span>
+                    <span className="text-xs font-bold text-white">Featured</span>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={formIsFeatured}
-                    onChange={(e) => setFormIsFeatured(e.target.checked)}
-                    className="accent-amber-400 w-4 h-4 cursor-pointer"
-                  />
-                </label>
+                  <button
+                    type="button"
+                    onClick={() => setFormIsFeatured(!formIsFeatured)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition cursor-pointer ${
+                      formIsFeatured
+                        ? 'bg-amber-400 text-black shadow-sm font-black'
+                        : 'bg-neutral-800 text-neutral-400 border border-neutral-700'
+                    }`}
+                  >
+                    {formIsFeatured ? 'Star ON' : 'Off'}
+                  </button>
+                </div>
 
-                <label className="flex items-center justify-between cursor-pointer">
+                {/* VIP Toggle */}
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-900 border border-neutral-800">
                   <div className="flex items-center gap-2">
                     <i className="fa-solid fa-crown text-amber-400 text-xs"></i>
-                    <span className="text-xs font-bold text-white">VIP Member Only</span>
+                    <span className="text-xs font-bold text-white">VIP Gate</span>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={formIsPremium}
-                    onChange={(e) => setFormIsPremium(e.target.checked)}
-                    className="accent-amber-400 w-4 h-4 cursor-pointer"
-                  />
-                </label>
+                  <button
+                    type="button"
+                    onClick={() => setFormIsPremium(!formIsPremium)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition cursor-pointer ${
+                      formIsPremium
+                        ? 'bg-amber-400 text-black shadow-sm font-black'
+                        : 'bg-neutral-800 text-neutral-400 border border-neutral-700'
+                    }`}
+                  >
+                    {formIsPremium ? 'VIP ON' : 'Free'}
+                  </button>
+                </div>
               </div>
 
               {/* Multiple Mirror Links Section */}
